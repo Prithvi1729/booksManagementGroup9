@@ -1,97 +1,96 @@
-const UserModel = require("../models/userModel")
-const jwt = require('jsonwebtoken')
+const usermodel = require("../models/UserModel.js");
+let validator =require("email-validator");
+const jwt = require("jsonwebtoken");
 
 
 
-const isValid = function (value) {
-    if (typeof value === 'undefined' || value === null) return false
-    if (typeof value === 'string' && value.trim().length === 0) return false
-    return true;
-}
-
-const isValidTitle = function (title) {
-    return ['Mr', 'Mrs', "Miss"].indexOf(title) !== -1
-}
-
-const createUser = async function (req, res) {
+const user = async function (req, res) {
     try {
-        let data = req.body
+         let userdata = req.body
+         if (Object.entries(userdata).length === 0) {
+              res.status(400).send({ status: false, msg: "Kindly pass some data " })
+         }
+         else {
+              let title= req.body.title
+              if(!title){
+              return res.status(400).send({status: false,msg:"Enter title"})}
+              
+              let name = req.body.name
+              if(!name)
+              return res.status(400).send({status: false,msg:"Enter Name"})
+             
+              let  mobile = req.body.mobile
+              if(!mobile)
+              return res.status(401).send({status: false,msg:"Enter mobilenumber"})
 
-        let { title, name, email, phone, password } = data
+              if (!(/^(\+91[\-\s]?)?[0]?(91)?[789]\d{9}$/.test(mobile))) {
+                   res.status(400).send({status : false , msg : " enter valid mobileno."})
+                   return
+               }
+               let  email = req.body.email
+               if(!email)
+               return res.status(401).send({status: false,msg:"Enter emailId"})
 
-        if (Object.keys(data).length == 0) {
-            return res.status(400).send({ status: false, msg: "request body is empty ,BAD REQUEST" })
-        }
-        if (!isValid(title)) {
-            return res.status(400).send({ status: false, msg: "title is required" })
-        }
-        if (!isValidTitle(title)) {
-            return res.send(400).send({ status: false, msg: "title should be among Mr,Mrs,Miss" })
-        }
-        if (!isValid(name)) {
-            return res.send(400).send({ status: false, msg: "name is required" })
-        }
-        if (!isValid(email)) {
-            return res.status(400).send({ status: false, msg: "email is required" })
-        }
-        if (!(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email))) {
-            return res.status(400).send({ status: false, msg: "emailId is not a valid emailId" })
-        }
-        if (!isValid(phone)) {
-            return res.status(400).send({ status: false, msg: "phone is required" })
-        }
-        if (!(/^(\+91[\-\s]?)?[0]?(91)?[6789]\d{9}$/.test(phone))) {
-            return res.status(400).send({ status: false, msg: "phone no. is not a valid phone no." })
-        }
-        if (!isValid(password)) {
-            return res.status(400).send({ status: false, msg: "password is required" })
-        }
-        if (!(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,15}$/ .test(password))) {
-            return res.status(400).send({ status: false, msg: "password length must be in between 8 to 15 and must contain atleast one number and uppercase and lowercase letter" })
-        }
+               let check = validator.validate(email);
+               if (!check) {
+                    return res.status(401).send({ status: false, msg: "Enter a valid email id" }) } 
+ 
+               let mail = await usermodel.findOne({ email })
+               if (mail) {
+                    return res.status(401).send({ status: false, msg: "Enter Unique Email Id." })}
 
-        isPhoneAlreadyUsed = await UserModel.findOne({ phone })
-        if (isPhoneAlreadyUsed) {
-            return res.status(400).send({ status: false, msg: " phone no. is already used, please provide another phone no." })
-        }
-        isEmailAlreadyUsed = await UserModel.findOne({ email })
-        if (isEmailAlreadyUsed) {
-            return res.status(400).send({ status: false, msg: " eamilId is already used, please provide another emailId" })
-        }
-        else {
-            let userCreated = await UserModel.create(data)
-            return res.status(201).send({ status: true, msg: "user created successfully", data: userCreated })
-        }
+               let password = req.body.password
+               if(!password){
+               return res.status(400).send({status: false,msg:"Enter password"})}
+
+              let address = req.body.address
+              if(!address){
+              return res.status(400).send({status:false,msg:"Enter address"})}
+                   
+              let user = await usermodel.create(userdata)
+              res.status(201).send({ status: true, data: user })
+         }
     }
     catch (error) {
-        console.log(error)
-        res.status(500).send({ msg: error.message })
+         console.log(error)
+         res.status(500).send({ status: false, msg: error.message })
     }
+
+};
+
+
+const loginUser = async function(req,res){
+     try{ let data = req.body
+          if (Object.entries(data).length === 0) {
+          res.status(400).send({ status: false, msg: "Kindly pass some data " })}
+
+          let username = req.body.email
+          let password = req.body.password
+
+          if(!username){
+               return res.status(400).send({status : false, msg : "Enter Valid Email"})}
+          if(!password){
+               return res.status(400).send({status:false,msg:"Enter valid Password"})}
+
+          let user = await usermodel.findOne({email : username,password : password})
+          if(!user){
+               return res.status(400).send({status:false,msg:"credentials dont match,plz check and try again"})} 
+            
+          let token = jwt.sign({
+               userId : user._id.toString(),  
+               batch: "thorium",
+          },"Project_1")
+          res.setHeader("x-api-key", token);
+          res.status(200).send({status : true, data : token})
+
+     }
+     catch(error)
+     {
+          console.log(error)
+          res.status(500).send({status: false, msg: error.message})
+     }
 }
 
-const loginUser = async function (req, res) {
-    try {
-        let email = req.body.email
-        let password = req.body.password
-        
-        if (!(isValid(email) && isValid(password))) {
-            return res.status(400).send({ msg: " email and password is required " })
-        } else {
-            let createdUser = await UserModel.findOne({ email: email, password: password })
-            if (!createdUser)
-                return res.status(404).send({ msg: "Cannot login as userName and password not matched" });
-            let iat = Math.floor(Date.now() / 1000)
-            let token = jwt.sign({ userId: createdUser._id, exp: iat + (60 * 30) }, "project-3_group-9")
-            res.setHeader("x-auth-token", token);
-            res.status(201).send({ msg: " loged in successfully", data: token })
-        }
-    }
-    catch (error) {
-        console.log("This is the error:", error.message)
-        res.status(500).send({ msg: "server error", err: error })
-    }
-
-}
-
-module.exports.createUser = createUser
-module.exports.loginUser = loginUser
+  
+module.exports.user=user
+module.exports.loginUser=loginUser

@@ -1,26 +1,26 @@
 {
-  "name": "titaniumaplus",
+  "name": "src",
   "version": "1.0.0",
-  "description": "repo for assignments and practice problems",
+  "description": "Backend cohort for Thorium(feb-May)",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon src/index.js"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/sabihak89/titaniumaplus.git"
-  },
-  "author": "functionUp",
+  "author": "",
   "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/sabihak89/titaniumaplus/issues"
-  },
-  "homepage": "https://github.com/sabihak89/titaniumaplus#readme",
   "dependencies": {
+    "axios": "^0.26.1",
     "body-parser": "^1.19.0",
     "cors": "^2.8.5",
+    "date-and-time": "^2.2.1",
+    "email-validator": "^2.0.4",
     "express": "^4.17.1",
+    "ip": "^1.1.5",
+    "is-mobile-number": "^1.0.3",
     "jsonwebtoken": "^8.5.1",
-    "mongoose": "^6.2.8"
+    "mobile-validator": "^1.0.1",
+    "mongoose": "^6.2.8",
+    "nodemon": "^2.0.15",
+    "phone-number-validation": "^0.3.1"
   }
 }

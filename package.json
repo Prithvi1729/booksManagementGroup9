@@ -19,7 +19,8 @@
     "is-mobile-number": "^1.0.3",
     "jsonwebtoken": "^8.5.1",
     "mobile-validator": "^1.0.1",
-    "mongoose": "^6.2.8",
+    "moment": "^2.29.1",
+    "mongoose": "^6.2.9",
     "nodemon": "^2.0.15",
     "phone-number-validation": "^0.3.1"
   }

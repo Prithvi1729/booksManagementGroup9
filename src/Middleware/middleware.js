@@ -5,7 +5,7 @@ const authentication = function(req,res,next){
         if(!token)
         return res.status(401).send({status: false, msg:"Token not present"})
     
-        let decodedToken = jwt.verify(token,"Project_1")
+        let decodedToken = jwt.verify(token,"Project_3")
         if(!decodedToken)
         return res.status(401).send({status:false,msg:"Token is invalid"})
     next()
@@ -22,13 +22,13 @@ const authorization = function(req, res, next) {
         if(!token)
         return res.status(401).send({status: false, msg:"Token not present"})
     
-        let decodedToken = jwt.verify(token,"Project_1")
+        let decodedToken = jwt.verify(token,"Project_3")
         if(!decodedToken)
         return res.status(401).send({status:false,msg:"Token is invalid"})
     
-        let userId = req.query.authorId
+        let userId = req.query.userId
         if (!userId)
-        return res.status(400).send({ status: false, msg: "Please Send Author Id" })
+        return res.status(400).send({ status: false, msg: "Please Send userId Id" })
 
         let userLoggedIn = decodedToken.userId
     

@@ -5,19 +5,17 @@ const bookcontroller= require("../controllers/BookController")
 const reviewcontroller= require("../controllers/ReviewController")
 const ProjectMiddleware= require("../Middleware/middleware")
 
-//userAPI's
 router.post("/register",usercontroller.user)
 router.post("/login",usercontroller.loginUser)
 
-//bookAPI's
-router.post("/createbook",bookcontroller.createbook)
-router.get("/getbook",bookcontroller.booklist)
-router.get("/books/:bookId",bookcontroller.getBookReview)
-router.put("/books/:bookId",bookcontroller.updatebook)
-router.delete("/books/:bookId",bookcontroller.deleteBook)
+router.post("/createbook",ProjectMiddleware.authentication,bookcontroller.createbook)
+router.get("/getbook",ProjectMiddleware.authentication,bookcontroller.booklist)
+router.get("/books/:bookId",ProjectMiddleware.authentication,bookcontroller.getBookReview)
+router.put("/books/:bookId",ProjectMiddleware.authentication,ProjectMiddleware.authorization,bookcontroller.updatebook)
+router.delete("/books/:bookId",ProjectMiddleware.authentication,ProjectMiddleware.authorization,bookcontroller.deleteBook)
 
-//reviewAPI's
-router.post("/createReview/:bookId",reviewcontroller.createReview)
-
+router.post("/createReview/:bookId",ProjectMiddleware.authentication,reviewcontroller.createReview)
+router.put("/books/:bookId/review/:reviewId",ProjectMiddleware.authentication,ProjectMiddleware.authorization,reviewcontroller.reviewUpdate)
+router.delete('/books/:bookId/review/:reviewId',ProjectMiddleware.authentication,ProjectMiddleware.authorization,reviewcontroller.reviewDelete)
 
 module.exports = router;

@@ -2,8 +2,6 @@ const usermodel = require("../models/UserModel.js");
 let validator =require("email-validator");
 const jwt = require("jsonwebtoken");
 
-
-
 const isValid = function (value) {
      if (typeof value == 'undefined' || value === null) return false
      if (typeof value == 'string' && value.trim().length === 0) return false
@@ -13,7 +11,7 @@ const isValid = function (value) {
      return ["Mr", "Mrs", "Miss"].indexOf(title) !== -1
  
  }
- // user register==========================================================
+ 
  const user = async function (req, res) {
      try {
          let userData = req.body
@@ -50,7 +48,7 @@ const isValid = function (value) {
          if (dupEmail) {
              return res.status(400).send({ status: false, msg: "this email ID is already registered" })
          }
-         if (!(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[a-zA-Z0-9]{8,}$/).test(userData.password)) {
+         if (!(/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/).test(userData.password)) {
              return res.status(400).send({ status: false, msg: "password should contain at least [1,@.,a-zA] " })
  
          }
@@ -110,6 +108,5 @@ const loginUser = async function(req,res){
      }
 }
 
-  
 module.exports.user=user
 module.exports.loginUser=loginUser
